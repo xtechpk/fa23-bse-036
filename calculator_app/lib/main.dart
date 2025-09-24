@@ -114,26 +114,34 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
 
   // A helper to build styled calculator buttons
   Widget _buildButton(String text,
-      {Color? color, Color? textColor, int flex = 1}) {
-    return Expanded(
-      flex: flex,
-      child: Padding(
-        padding: const EdgeInsets.all(6.0),
+      {Color? color,
+      Color? textColor,
+      int flex = 1,
+      required double buttonSize,
+      required double buttonPadding}) {
+    double width = buttonSize * flex + (buttonPadding * 2 * (flex - 1));
+    return Padding(
+      padding: EdgeInsets.all(buttonPadding),
+      child: SizedBox(
+        width: width,
+        height: buttonSize,
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: color ?? const Color.fromRGBO(51, 51, 51, 1),
             foregroundColor: textColor ?? Colors.white,
-            shape: const CircleBorder(),
-            padding: EdgeInsets.all(flex == 2 ? 20 : 22),
+            shape: flex > 1 ? const StadiumBorder() : const CircleBorder(),
+            padding: EdgeInsets.zero,
           ),
           onPressed: () => _onPressed(text),
-          child: Text(
-            text,
-            style: const TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.w500,
+          child: Center(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: buttonSize * 0.4,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
           ),
         ),
       ),
@@ -169,58 +177,120 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
               ),
             ),
             // Buttons Area
-            Expanded(
+            Flexible(
               flex: 3,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Row(
-                      children: [
-                        _buildButton("AC",
-                            color: Colors.grey, textColor: Colors.black),
-                        _buildButton("⌫",
-                            color: Colors.grey, textColor: Colors.black),
-                        _buildButton("%",
-                            color: Colors.grey, textColor: Colors.black),
-                        _buildButton("÷", color: Colors.orange),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        _buildButton("7"),
-                        _buildButton("8"),
-                        _buildButton("9"),
-                        _buildButton("×", color: Colors.orange),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        _buildButton("4"),
-                        _buildButton("5"),
-                        _buildButton("6"),
-                        _buildButton("-", color: Colors.orange),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        _buildButton("1"),
-                        _buildButton("2"),
-                        _buildButton("3"),
-                        _buildButton("+", color: Colors.orange),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        _buildButton("0", flex: 2),
-                        _buildButton("."),
-                        _buildButton("=", color: Colors.orange),
-                      ],
-                    ),
-                  ],
-                ),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  double availWidth = constraints.maxWidth;
+                  double availHeight = constraints.maxHeight;
+                  double buttonPadding = 6.0;
+                  // For 4 buttons row: total horizontal fixed = 12 (ends) + 36 (3 gaps of 12) = 48
+                  double horizFixed4 = buttonPadding * 2 * 4;
+                  double buttonW = (availWidth - horizFixed4) / 4;
+                  double vertFixed = buttonPadding * 2 * 5;
+                  double buttonH = (availHeight - vertFixed) / 5;
+                  double buttonSize = buttonW < buttonH ? buttonW : buttonH;
+                  // For last row with 3 items, but since we use same buttonSize, it will fit as flex adjusts
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildButton("AC",
+                              color: Colors.grey,
+                              textColor: Colors.black,
+                              buttonSize: buttonSize,
+                              buttonPadding: buttonPadding),
+                          _buildButton("⌫",
+                              color: Colors.grey,
+                              textColor: Colors.black,
+                              buttonSize: buttonSize,
+                              buttonPadding: buttonPadding),
+                          _buildButton("%",
+                              color: Colors.grey,
+                              textColor: Colors.black,
+                              buttonSize: buttonSize,
+                              buttonPadding: buttonPadding),
+                          _buildButton("÷",
+                              color: Colors.orange,
+                              buttonSize: buttonSize,
+                              buttonPadding: buttonPadding),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildButton("7",
+                              buttonSize: buttonSize,
+                              buttonPadding: buttonPadding),
+                          _buildButton("8",
+                              buttonSize: buttonSize,
+                              buttonPadding: buttonPadding),
+                          _buildButton("9",
+                              buttonSize: buttonSize,
+                              buttonPadding: buttonPadding),
+                          _buildButton("×",
+                              color: Colors.orange,
+                              buttonSize: buttonSize,
+                              buttonPadding: buttonPadding),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildButton("4",
+                              buttonSize: buttonSize,
+                              buttonPadding: buttonPadding),
+                          _buildButton("5",
+                              buttonSize: buttonSize,
+                              buttonPadding: buttonPadding),
+                          _buildButton("6",
+                              buttonSize: buttonSize,
+                              buttonPadding: buttonPadding),
+                          _buildButton("-",
+                              color: Colors.orange,
+                              buttonSize: buttonSize,
+                              buttonPadding: buttonPadding),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildButton("1",
+                              buttonSize: buttonSize,
+                              buttonPadding: buttonPadding),
+                          _buildButton("2",
+                              buttonSize: buttonSize,
+                              buttonPadding: buttonPadding),
+                          _buildButton("3",
+                              buttonSize: buttonSize,
+                              buttonPadding: buttonPadding),
+                          _buildButton("+",
+                              color: Colors.orange,
+                              buttonSize: buttonSize,
+                              buttonPadding: buttonPadding),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildButton("0",
+                              flex: 2,
+                              buttonSize: buttonSize,
+                              buttonPadding: buttonPadding),
+                          _buildButton(".",
+                              buttonSize: buttonSize,
+                              buttonPadding: buttonPadding),
+                          _buildButton("=",
+                              color: Colors.orange,
+                              buttonSize: buttonSize,
+                              buttonPadding: buttonPadding),
+                        ],
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
           ],
