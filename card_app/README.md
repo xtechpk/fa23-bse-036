@@ -18,4 +18,7 @@ This app showcases different portfolio card styles and experiences.
 
 ## Demo Video
 
-🎥 [Watch Demo Video](assets/screenshots/video.mp4)
+🎥 [Download / Watch Demo Video](assets/screenshots/video.mp4)
+
+*(This video is tracked with [Git LFS](https://git-lfs.com/). If you clone the repository, make sure Git LFS is installed to properly fetch large media files.)*
+
