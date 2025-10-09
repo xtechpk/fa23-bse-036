@@ -1,4 +1,3 @@
-Of course\! Here's a modified version of your README tailored for your dice rolling app, including the screenshots section.
 
 # Ludo Fun\! - A Flutter Dice Game
 
