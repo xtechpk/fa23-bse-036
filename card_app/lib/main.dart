@@ -387,7 +387,6 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
-  // ## ---- END: UPDATED EXPERIENCE SECTION ---- ##
 
   // ## ---- START: UPDATED CONTACT SECTION ---- ##
   Widget _buildContactCard() {
