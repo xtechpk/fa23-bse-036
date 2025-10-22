@@ -6,6 +6,17 @@ const { Pool } = require('pg');
 const app = express();
 app.use(express.json());
 
+// Simple CORS middleware to allow browser-based clients (change origin in prod)
+app.use((req, res, next) => {
+  // Allow all origins during development. For production, set this to your front-end origin.
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  // If this is a preflight request, return immediately
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});
+
 // Build PG pool config either from DATABASE_URL or individual PG_* env vars.
 const rawDbUrl = process.env.DATABASE_URL;
 let pool;
@@ -139,10 +150,12 @@ app.post('/api/v1/auth/signup', async (req, res) => {
     const exists = await dbFindUserByEmail(email);
     if (exists.rowCount > 0) return res.status(409).json({ message: 'Email already registered' });
 
-    const passwordHash = await bcrypt.hash(password, 12);
-    const insert = await dbInsertUser(email, name, passwordHash);
-
-    return res.status(201).json({ data: insert.rows[0] });
+  const passwordHash = await bcrypt.hash(password, 12);
+  const insert = await dbInsertUser(email, name, passwordHash);
+  const created = insert.rows[0];
+  // return a simple demo token that encodes the user id so the demo auth can work
+  const token = `fake-jwt-${created.user_id}`;
+  return res.status(201).json({ data: created, token });
   } catch (err) {
     console.error('signup error', err);
     return res.status(500).json({ message: 'Internal server error' });
@@ -154,16 +167,21 @@ app.post('/api/v1/auth/login', async (req, res) => {
   try {
     const { email: rawEmail, password } = req.body;
   const email = rawEmail?.trim().toLowerCase();
-  const { rows } = await dbFindUserByEmail(email);
+    console.log('login attempt for:', email);
+    const { rows } = await dbFindUserByEmail(email);
+    console.log('dbFindUserByEmail rowCount =', rows.length);
   if (!rows.length) return res.status(401).json({ message: 'Invalid credentials' });
 
   const user = rows[0];
+  console.log('user has password_hash?', !!user.password_hash);
   if (!user.password_hash) return res.status(401).json({ message: 'Invalid credentials' });
   const ok = await bcrypt.compare(password, user.password_hash);
   if (!ok) return res.status(401).json({ message: 'Invalid credentials' });
 
   delete user.password_hash;
-  return res.json({ data: user, token: 'fake_jwt_token' });
+    // create demo token that embeds user id
+    const token = `fake-jwt-${user.user_id}`;
+    return res.json({ data: user, token });
   } catch (err) {
     console.error('login error', err);
     return res.status(500).json({ message: 'Internal server error' });
@@ -172,8 +190,15 @@ app.post('/api/v1/auth/login', async (req, res) => {
 
 // Middleware to mock auth (reads user id from header X-User-Id for simplicity)
 async function requireAuth(req, res, next) {
-  const userId = req.header('X-User-Id');
-  if (!userId) return res.status(401).json({ message: 'Missing X-User-Id header for demo auth' });
+  const auth = req.header('Authorization');
+  if (!auth) return res.status(401).json({ message: 'Missing Authorization header for demo auth' });
+  const parts = auth.split(' ');
+  if (parts.length !== 2 || parts[0] !== 'Bearer') return res.status(401).json({ message: 'Invalid Authorization header' });
+  const token = parts[1];
+  // token format: fake-jwt-<userId>
+  const m = token.match(/^fake-jwt-(\d+)$/);
+  if (!m) return res.status(401).json({ message: 'Invalid token format' });
+  const userId = m[1];
   const { rows } = await dbFindUserById(userId);
   if (!rows.length) return res.status(401).json({ message: 'Invalid user' });
   req.user = rows[0];

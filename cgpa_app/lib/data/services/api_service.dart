@@ -6,15 +6,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:developer' as developer;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../models/user.dart';
 
 class ApiService {
-  // *** CONFIGURATION FOR THE FLUTTER CLIENT ***
-  // NOTE: This MUST be the URL of YOUR backend API server (e.g., Express, Flask)
-
-  // Default base URL for local development.
-  // If you're using Android emulator, change this to 'http://10.0.2.2:3000/api/v1'
-  // If you're using a real device, set this to your machine's LAN IP.
   static const String kBaseUrl = 'http://localhost:3000/api/v1';
 
   // Simulated API Data and State (kept as a fallback)
@@ -35,21 +30,38 @@ class ApiService {
     'test@example.com': 'password123',
   };
 
+  // Secure storage for token persistence
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+  String? _token;
+
+  Future<void> _loadToken() async {
+    if (_token != null) return;
+    _token = await _secureStorage.read(key: 'auth_token');
+  }
+
+  Future<void> _saveToken(String token) async {
+    _token = token;
+    await _secureStorage.write(key: 'auth_token', value: token);
+  }
+
   // Helper to call backend with proper error handling
   Future<http.Response> _httpPost(
       String path, Map<String, dynamic> body) async {
     final uri = Uri.parse('$kBaseUrl$path');
+    await _loadToken();
+    final headers = {'Content-Type': 'application/json'};
+    if (_token != null) headers['Authorization'] = 'Bearer $_token';
     return await http
-        .post(uri,
-            headers: {'Content-Type': 'application/json'},
-            body: jsonEncode(body))
+        .post(uri, headers: headers, body: jsonEncode(body))
         .timeout(const Duration(seconds: 8));
   }
 
   Future<http.Response> _httpPut(String path, Map<String, dynamic> body,
       {Map<String, String>? headers}) async {
     final uri = Uri.parse('$kBaseUrl$path');
+    await _loadToken();
     final h = {'Content-Type': 'application/json'};
+    if (_token != null) h['Authorization'] = 'Bearer $_token';
     if (headers != null) h.addAll(headers);
     return await http
         .put(uri, headers: h, body: jsonEncode(body))
@@ -67,6 +79,9 @@ class ApiService {
         final data = payload['data'] as Map<String, dynamic>;
         final user = User.fromJson(data);
         _currentUser = user;
+        // persist token if returned
+        final token = payload['token'] as String?;
+        if (token != null) await _saveToken(token);
         return user;
       }
       final Map<String, dynamic> err = jsonDecode(resp.body);
@@ -97,6 +112,8 @@ class ApiService {
         final data = payload['data'] as Map<String, dynamic>;
         final user = User.fromJson(data);
         _currentUser = user;
+        final token = payload['token'] as String?;
+        if (token != null) await _saveToken(token);
         return user;
       }
       final Map<String, dynamic> err = jsonDecode(resp.body);

@@ -23,8 +23,8 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final String name = 'Ali Hassan';
-  final String email = 'xtechpk1@gmail.com';
+  final String name = 'Mudassar Siddique';
+  final String email = 'mudassar1@gmail.com';
   final String phone = '+923238130030';
   final String tagline = 'MERN-Stack Developer & AI Enthusiast';
 
