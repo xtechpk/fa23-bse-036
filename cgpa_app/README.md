@@ -1,22 +1,27 @@
-# My Flutter CGPA_Calculator App
-
-This app showcases different portfolio card styles and experiences.
 
 
+# 🎓 **Flutter CGPA Calculator App**
 
-## Screenshots
+A simple and elegant Flutter application to calculate your **CGPA** easily with a clean user interface and smooth user experience.
+
+---
+
+## 📱 **App Screenshots**
 
 <p align="center">
-  <img src="assets/screenshots/login.jpeg" width="250" />
-  <img src="assets/screenshots/register.jpeg" width="250" />
-  <img src="assets/screenshots/forget.jpeg" width="250" />
-  <img src="assets/screenshots/home.jpeg" width="250" />
-  <img src="assets/screenshots/home1.jpeg" width="250" />
+  <img src="assets/screenshots/login.jpeg" alt="Login Screen" width="230" style="margin: 10px; border-radius: 12px;" />
+  <img src="assets/screenshots/register.jpeg" alt="Register Screen" width="230" style="margin: 10px; border-radius: 12px;" />
+  <img src="assets/screenshots/forget.jpeg" alt="Forgot Password Screen" width="230" style="margin: 10px; border-radius: 12px;" />
+  <img src="assets/screenshots/home.jpeg" alt="Home Screen" width="230" style="margin: 10px; border-radius: 12px;" />
+  <img src="assets/screenshots/home1.jpeg" alt="CGPA Calculation Screen" width="230" style="margin: 10px; border-radius: 12px;" />
 </p>
 
-## Demo Video
+---
 
-🎥 [Download / Watch Demo Video](assets/screenshots/video.mp4)
+## 🚀 **Features**
 
-*(This video is tracked with [Git LFS](https://git-lfs.com/). If you clone the repository, make sure Git LFS is installed to properly fetch large media files.)*
-
+* 🧮 Calculate CGPA with ease
+* 💾 Save and view previous results
+* 🎨 Modern UI with Flutter Material Design
+* 🔐 Secure login and signup screens
+* 🌙 Clean layout and responsive design
