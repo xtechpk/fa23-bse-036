@@ -1,0 +1,4 @@
+{
+  // Disable automatic downloading of JSON schemas (prevents schemastore fetch errors)
+  "json.schemaDownload.enable": false
+}
