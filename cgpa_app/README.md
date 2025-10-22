@@ -1,27 +1,34 @@
 
 
+<div align="center">
+
 # 🎓 **Flutter CGPA Calculator App**
 
-A simple and elegant Flutter application to calculate your **CGPA** easily with a clean user interface and smooth user experience.
+
+
+
+|                                   Login                                   |                                     Register                                    |                                    Forgot Password                                   |
+| :-----------------------------------------------------------------------: | :-----------------------------------------------------------------------------: | :----------------------------------------------------------------------------------: |
+| <img src="assets/screenshots/login.jpeg" width="250" alt="Login Screen"/> | <img src="assets/screenshots/register.jpeg" width="250" alt="Register Screen"/> | <img src="assets/screenshots/forget.jpeg" width="250" alt="Forgot Password Screen"/> |
+
+|                                   Home                                  |                               CGPA Details                               |
+| :---------------------------------------------------------------------: | :----------------------------------------------------------------------: |
+| <img src="assets/screenshots/home.jpeg" width="250" alt="Home Screen"/> | <img src="assets/screenshots/home1.jpeg" width="250" alt="CGPA Screen"/> |
 
 ---
 
-## 📱 **App Screenshots**
+### 🧮 **Features**
 
-<p align="center">
-  <img src="assets/screenshots/login.jpeg" alt="Login Screen" width="230" style="margin: 10px; border-radius: 12px;" />
-  <img src="assets/screenshots/register.jpeg" alt="Register Screen" width="230" style="margin: 10px; border-radius: 12px;" />
-  <img src="assets/screenshots/forget.jpeg" alt="Forgot Password Screen" width="230" style="margin: 10px; border-radius: 12px;" />
-  <img src="assets/screenshots/home.jpeg" alt="Home Screen" width="230" style="margin: 10px; border-radius: 12px;" />
-  <img src="assets/screenshots/home1.jpeg" alt="CGPA Calculation Screen" width="230" style="margin: 10px; border-radius: 12px;" />
-</p>
+✅ Easy and fast CGPA calculation
+✅ User-friendly and modern UI
+✅ Login, Register, and Forgot Password screens
+✅ Clean navigation and design
+✅ Built completely with **Flutter**
 
 ---
 
-## 🚀 **Features**
+### ⚙️ **Tech Stack**
 
-* 🧮 Calculate CGPA with ease
-* 💾 Save and view previous results
-* 🎨 Modern UI with Flutter Material Design
-* 🔐 Secure login and signup screens
-* 🌙 Clean layout and responsive design
+* **Framework:** Flutter
+* **Language:** Dart
+* **Design:** Material Design
