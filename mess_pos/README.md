@@ -30,9 +30,31 @@ A few resources to get you started if this is your first Flutter project:
 
 - [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
 - [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-| Mobile View |
-| :---: |
-| ![Mobile Screenshot](assets/screenshots/mobile_view.png) |
+## 📱 Mobile View
+
+<table align="center">
+  <tr>
+    <td><img src="assets/screenshots/login.jpeg" width="250" alt="Login" /></td>
+    <td><img src="assets/screenshots/Signup.jpeg" width="250" alt="Signup" /></td>
+  </tr>
+  <tr>
+    <td><img src="assets/screenshots/saleTerminal.jpeg" width="250" alt="Sale Terminal" /></td>
+    <td><img src="assets/screenshots/checkout.jpeg" width="250" alt="Checkout" /></td>
+  </tr>
+  <tr>
+    <td><img src="assets/screenshots/payment.jpeg" width="250" alt="Payment" /></td>
+    <td><img src="assets/screenshots/RegisterCustomer.jpeg" width="250" alt="Register Customer" /></td>
+  </tr>
+  <tr>
+    <td><img src="assets/screenshots/menu.jpeg" width="250" alt="Menu" /></td>
+    <td><img src="assets/screenshots/saleReport.jpeg" width="250" alt="Sale Report" /></td>
+  </tr>
+  <tr>
+    <td><img src="assets/screenshots/profile.jpeg" width="250" alt="Profile" /></td>
+    <td><img src="assets/screenshots/customers.jpeg" width="250" alt="Customers" /></td>
+  </tr>
+</table>
+
 
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
