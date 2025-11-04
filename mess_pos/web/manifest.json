@@ -1,6 +1,6 @@
 {
-    "name": "mess_pos",
-    "short_name": "mess_pos",
+    "name": "Patient_pos",
+    "short_name": "Patient_pos",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

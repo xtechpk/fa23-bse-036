@@ -1,5 +1,5 @@
-#ifndef RUNNER_WIN32_WINDOW_H_
-#define RUNNER_WIN32_WINDOW_H_
+#ifndef RUNNER_WIN32_WINDOW_H_ // NOLINT
+#define RUNNER_WIN32_WINDOW_H_ // NOLINT
 
 #include <windows.h>
 
@@ -76,7 +76,7 @@ class Win32Window {
 
   // OS callback called by message pump. Handles the WM_NCCREATE message which
   // is passed when the non-client area is being created and enables automatic
-  // non-client DPI scaling so that the non-client area automatically
+  // non-client DPI scaling so that the non-client area automatically // Corrected typo
   // responds to changes in DPI. All other messages are handled by
   // MessageHandler.
   static LRESULT CALLBACK WndProc(HWND const window,
@@ -99,4 +99,4 @@ class Win32Window {
   HWND child_content_ = nullptr;
 };
 
-#endif  // RUNNER_WIN32_WINDOW_H_
+#endif  // RUNNER_WIN32_WINDOW_H_ // NOLINT

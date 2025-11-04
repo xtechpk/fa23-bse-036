@@ -27,7 +27,7 @@ set(AOT_LIBRARY "${PROJECT_DIR}/build/windows/app.so" PARENT_SCOPE)
 list(APPEND FLUTTER_LIBRARY_HEADERS
   "flutter_export.h"
   "flutter_windows.h"
-  "flutter_messenger.h"
+  "flutter_Patientenger.h"
   "flutter_plugin_registrar.h"
   "flutter_texture_registrar.h"
 )
