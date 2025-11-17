@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:task_app/auth_service.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -85,7 +84,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         border: OutlineInputBorder(),
                         prefixIcon: Padding(
                           padding: EdgeInsets.symmetric(horizontal: 12.0),
-                          child: FaIcon(FontAwesomeIcons.user),
+                          child: Icon(Icons.person_outline),
                         ),
                       ),
                       validator: (value) =>
@@ -99,7 +98,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         border: OutlineInputBorder(),
                         prefixIcon: Padding(
                           padding: EdgeInsets.symmetric(horizontal: 12.0),
-                          child: FaIcon(FontAwesomeIcons.envelope),
+                          child: Icon(Icons.email_outlined),
                         ),
                       ),
                       keyboardType: TextInputType.emailAddress,
@@ -117,12 +116,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         border: const OutlineInputBorder(),
                         prefixIcon: const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 12.0),
-                          child: FaIcon(FontAwesomeIcons.lock),
+                          child: Icon(Icons.lock_outline),
                         ),
                         suffixIcon: IconButton(
-                          icon: FaIcon(_obscurePassword
-                              ? FontAwesomeIcons.eyeSlash
-                              : FontAwesomeIcons.eye),
+                          icon: Icon(_obscurePassword
+                              ? Icons.visibility_off
+                              : Icons.visibility),
                           onPressed: () => setState(
                               () => _obscurePassword = !_obscurePassword),
                         ),

@@ -39,14 +39,34 @@ final appThemeData = {
     ),
   ),
   AppTheme.oceanBlue: ThemeData(
-    colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+    colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
     useMaterial3: true,
-    // 💡 Fix 3: Ensure the extensions list is constant.
+    appBarTheme: const AppBarTheme(
+      iconTheme: IconThemeData(color: Colors.white),
+      backgroundColor: Colors.teal,
+      foregroundColor: Colors.white,
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      prefixIconColor: Colors.grey[600],
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8.0),
+        borderSide: BorderSide(color: Colors.grey[400]!),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8.0),
+        borderSide: const BorderSide(color: Colors.teal, width: 2.0),
+      ),
+      focusColor: Colors.teal,
+      floatingLabelStyle: const TextStyle(color: Colors.teal),
+    ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: Colors.teal,
+      foregroundColor: Colors.white,
+    ),
     extensions: const <ThemeExtension<dynamic>>[
       ThemeGradients(
-        // Const applies recursively, no need for const here
         scaffold: LinearGradient(
-          colors: [Color(0xFF0052D4), Color(0xFF4364F7), Color(0xFF6FB1FC)],
+          colors: [Color(0xFF2193b0), Color(0xFF6dd5ed)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),

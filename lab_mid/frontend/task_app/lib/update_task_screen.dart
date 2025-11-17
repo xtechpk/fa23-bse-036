@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:task_app/category_model.dart';
+import 'package:task_app/task_model.dart';
 import 'package:task_app/task_service.dart';
 import 'package:task_app/category_service.dart';
-import 'package:task_app/create_category_screen.dart';
 import 'package:task_app/notification_service.dart';
 
-class CreateTaskScreen extends StatefulWidget {
-  const CreateTaskScreen({super.key});
+class UpdateTaskScreen extends StatefulWidget {
+  final Task task;
+  const UpdateTaskScreen({super.key, required this.task});
 
   @override
-  State<CreateTaskScreen> createState() => _CreateTaskScreenState();
+  State<UpdateTaskScreen> createState() => _UpdateTaskScreenState();
 }
 
-class _CreateTaskScreenState extends State<CreateTaskScreen> {
+class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _dueDateController = TextEditingController();
+  late TextEditingController _titleController;
+  late TextEditingController _descriptionController;
+  late TextEditingController _dueDateController;
+
   int? _selectedCategoryId;
   String? _selectedPriority;
   DateTime? _selectedDateTime;
@@ -26,6 +28,19 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   @override
   void initState() {
     super.initState();
+    _titleController = TextEditingController(text: widget.task.title);
+    _descriptionController =
+        TextEditingController(text: widget.task.description);
+    _dueDateController = TextEditingController();
+
+    _selectedCategoryId = widget.task.category?.id;
+    _selectedPriority = widget.task.priority;
+    _selectedDateTime = widget.task.dueDateTime;
+
+    if (_selectedDateTime != null) {
+      _updateDueDateText(_selectedDateTime!);
+    }
+
     _fetchCategories();
   }
 
@@ -37,7 +52,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
         _categories = categories;
       });
     } catch (e) {
-      // Optionally handle error fetching categories
+      // Handle error
     }
   }
 
@@ -53,7 +68,8 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
       try {
-        final newTask = await TaskService().createTask(
+        final updatedTask = await TaskService().updateTask(
+          taskId: widget.task.id,
           title: _titleController.text,
           description: _descriptionController.text,
           categoryId: _selectedCategoryId,
@@ -61,32 +77,35 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
           dueDate: _selectedDateTime?.toIso8601String(),
         );
 
-        // Schedule a notification if a due date is set
-        await NotificationService().scheduleNotificationForTask(newTask);
+        // Re-schedule the notification with the updated details
+        await NotificationService().scheduleNotificationForTask(updatedTask);
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Task created successfully!')),
+            const SnackBar(content: Text('Task updated successfully!')),
           );
-          // Pop with a 'true' result to indicate success
-          Navigator.of(context).pop(true);
+          Navigator.of(context).pop(true); // Pop with success
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
                 content: Text(
-                    'Failed to create task: ${e.toString().replaceFirst("Exception: ", "")}')),
+                    'Failed to update task: ${e.toString().replaceFirst("Exception: ", "")}')),
           );
         }
       } finally {
         if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
+          setState(() => _isLoading = false);
         }
       }
     }
+  }
+
+  void _updateDueDateText(DateTime dateTime) {
+    final localTime = dateTime.toLocal();
+    _dueDateController.text =
+        '${localTime.year}-${localTime.month.toString().padLeft(2, '0')}-${localTime.day.toString().padLeft(2, '0')} ${localTime.hour.toString().padLeft(2, '0')}:${localTime.minute.toString().padLeft(2, '0')}';
   }
 
   Future<void> _selectDateTime() async {
@@ -106,10 +125,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
         setState(() {
           _selectedDateTime = DateTime(pickedDate.year, pickedDate.month,
               pickedDate.day, pickedTime.hour, pickedTime.minute);
-          final localTime = _selectedDateTime!.toLocal();
-          // Use string interpolation for better readability and performance
-          _dueDateController.text =
-              '${localTime.year}-${localTime.month.toString().padLeft(2, '0')}-${localTime.day.toString().padLeft(2, '0')} ${localTime.hour.toString().padLeft(2, '0')}:${localTime.minute.toString().padLeft(2, '0')}';
+          _updateDueDateText(_selectedDateTime!);
         });
       }
     }
@@ -119,14 +135,13 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create New Task'),
+        title: const Text('Edit Task'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: ListView(
             children: [
               TextFormField(
                 controller: _titleController,
@@ -152,42 +167,23 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
               ),
               const SizedBox(height: 16),
               if (_categories != null)
-                Row(
-                  children: [
-                    Expanded(
-                      child: DropdownButtonFormField<int>(
-                        value: _selectedCategoryId,
-                        hint: const Text('Select Category'),
-                        items: _categories!
-                            .map((category) => DropdownMenuItem(
-                                  value: category.id,
-                                  child: Text(category.name),
-                                ))
-                            .toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedCategoryId = value;
-                          });
-                        },
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.add),
-                      onPressed: () async {
-                        final result = await Navigator.of(context).push<bool>(
-                          MaterialPageRoute(
-                              builder: (_) => const CreateCategoryScreen()),
-                        );
-                        if (result == true) {
-                          _fetchCategories(); // Refresh categories
-                        }
-                      },
-                      tooltip: 'Create New Category',
-                    )
-                  ],
+                DropdownButtonFormField<int>(
+                  value: _selectedCategoryId,
+                  hint: const Text('Select Category'),
+                  items: _categories!
+                      .map((category) => DropdownMenuItem(
+                            value: category.id,
+                            child: Text(category.name),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedCategoryId = value;
+                    });
+                  },
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                  ),
                 ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
@@ -201,7 +197,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                     .toList(),
                 onChanged: (value) {
                   setState(() {
-                    _selectedPriority = value; // Corrected syntax
+                    _selectedPriority = value;
                   });
                 },
                 decoration: const InputDecoration(
@@ -213,7 +209,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                   ? const Center(child: CircularProgressIndicator())
                   : ElevatedButton(
                       onPressed: _submitForm,
-                      child: const Text('Create Task'),
+                      child: const Text('Update Task'),
                     ),
             ],
           ),

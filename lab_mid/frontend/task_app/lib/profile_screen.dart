@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:task_app/auth_service.dart';
-import 'package:task_app/app_themes.dart';
-import 'package:task_app/theme_notifier.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -146,11 +143,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const Divider(height: 48),
-            // --- Theme Selection Section ---
-            Text('Appearance', style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 16),
-            _buildThemeSelector(context),
-            const Divider(height: 48),
 
             // --- Change Password Section ---
             Text('Change Password',
@@ -204,44 +196,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildThemeSelector(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
-    return Column(
-      children: [
-        RadioListTile<AppTheme>(
-          title: const Text('Default Purple'),
-          value: AppTheme.deepPurple,
-          groupValue: themeNotifier.currentThemeKey,
-          onChanged: (AppTheme? value) {
-            if (value != null) {
-              themeNotifier.setTheme(value);
-            }
-          },
-        ),
-        RadioListTile<AppTheme>(
-          title: const Text('Ocean Blue Gradient'),
-          value: AppTheme.oceanBlue,
-          groupValue: themeNotifier.currentThemeKey,
-          onChanged: (AppTheme? value) {
-            if (value != null) {
-              themeNotifier.setTheme(value);
-            }
-          },
-        ),
-        RadioListTile<AppTheme>(
-          title: const Text('Sunset Orange Gradient'),
-          value: AppTheme.sunsetOrange,
-          groupValue: themeNotifier.currentThemeKey,
-          onChanged: (AppTheme? value) {
-            if (value != null) {
-              themeNotifier.setTheme(value);
-            }
-          },
-        ),
-      ],
     );
   }
 }

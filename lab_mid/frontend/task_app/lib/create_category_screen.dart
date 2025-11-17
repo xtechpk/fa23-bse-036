@@ -39,8 +39,8 @@ class _CreateCategoryScreenState extends State<CreateCategoryScreen> {
           if (widget.onCategoryCreated != null) {
             widget.onCategoryCreated!();
           }
-          // Pop the screen/modal
-          Navigator.of(context).pop();
+          // Pop with a 'true' result to indicate success
+          Navigator.of(context).pop(true);
         }
       } catch (e) {
         if (mounted) {
@@ -62,40 +62,47 @@ class _CreateCategoryScreenState extends State<CreateCategoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Designed to be used in a modal
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Create New Category',
-              style: Theme.of(context).textTheme.titleLarge,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            TextFormField(
-              controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Category Name'),
-              validator: (value) => value!.isEmpty ? 'Name is required' : null,
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _descriptionController,
-              decoration:
-                  const InputDecoration(labelText: 'Description (Optional)'),
-            ),
-            const SizedBox(height: 24),
-            _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : ElevatedButton(
-                    onPressed: _submitForm,
-                    child: const Text('Create Category'),
-                  ),
-          ],
+    // This widget can be used as a full screen or in a modal.
+    // The Scaffold is necessary for when it's pushed as a full page.
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Create New Category'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Create New Category',
+                style: Theme.of(context).textTheme.titleLarge,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              TextFormField(
+                controller: _nameController,
+                decoration: const InputDecoration(labelText: 'Category Name'),
+                validator: (value) =>
+                    value!.isEmpty ? 'Name is required' : null,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _descriptionController,
+                decoration:
+                    const InputDecoration(labelText: 'Description (Optional)'),
+              ),
+              const SizedBox(height: 24),
+              _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : ElevatedButton(
+                      onPressed: _submitForm,
+                      child: const Text('Create Category'),
+                    ),
+            ],
+          ),
         ),
       ),
     );

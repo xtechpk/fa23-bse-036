@@ -37,7 +37,7 @@ class CategoryService {
         throw Exception('Could not connect to the server.');
       }
       throw Exception(
-          e.response?.data['error'] ?? 'Failed to create category.');
+          e.response?.data['message'] ?? 'Failed to create category.');
     }
   }
 
@@ -54,7 +54,7 @@ class CategoryService {
         throw Exception('Could not connect to the server.');
       }
       throw Exception(
-          e.response?.data['error'] ?? 'Failed to update category.');
+          e.response?.data['message'] ?? 'Failed to update category.');
     }
   }
 
@@ -65,14 +65,10 @@ class CategoryService {
       if (e.type == DioExceptionType.connectionError) {
         throw Exception('Could not connect to the server.');
       }
-      // Handle 204 No Content response
-      if (e.response?.statusCode == 204) {
-        return; // Deletion was successful
-      }
       throw Exception(
-          e.response?.data['error'] ?? 'Failed to delete category.');
+          e.response?.data['message'] ?? 'Failed to delete category.');
     } catch (e) {
-      throw Exception('An unknown error occurred while deleting category.');
+      throw Exception('An unknown error occurred while deleting the category.');
     }
   }
 }

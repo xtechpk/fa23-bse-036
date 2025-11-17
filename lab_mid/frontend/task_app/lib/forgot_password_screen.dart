@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:task_app/auth_service.dart';
 import 'package:task_app/otp_verification_screen.dart';
 
@@ -91,7 +90,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         border: OutlineInputBorder(),
                         prefixIcon: Padding(
                           padding: EdgeInsets.symmetric(horizontal: 12.0),
-                          child: FaIcon(FontAwesomeIcons.envelope),
+                          child: Icon(Icons.email_outlined),
                         ),
                       ),
                       keyboardType: TextInputType.emailAddress,

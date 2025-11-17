@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:task_app/auth_service.dart';
 import 'package:task_app/register_screen.dart';
 import 'package:task_app/forgot_password_screen.dart';
@@ -87,7 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         border: OutlineInputBorder(),
                         prefixIcon: Padding(
                           padding: EdgeInsets.symmetric(horizontal: 12.0),
-                          child: FaIcon(FontAwesomeIcons.envelope),
+                          child: Icon(Icons.email_outlined),
                         ),
                       ),
                       keyboardType: TextInputType.emailAddress,
@@ -105,12 +104,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         border: const OutlineInputBorder(),
                         prefixIcon: const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 12.0),
-                          child: FaIcon(FontAwesomeIcons.lock),
+                          child: Icon(Icons.lock_outline),
                         ),
                         suffixIcon: IconButton(
-                          icon: FaIcon(_obscurePassword
-                              ? FontAwesomeIcons.eyeSlash
-                              : FontAwesomeIcons.eye),
+                          icon: Icon(_obscurePassword
+                              ? Icons.visibility_off
+                              : Icons.visibility),
                           onPressed: () => setState(
                               () => _obscurePassword = !_obscurePassword),
                         ),

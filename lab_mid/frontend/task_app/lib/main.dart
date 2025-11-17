@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:task_app/login_screen.dart';
+import 'package:task_app/auth_check_screen.dart';
 import 'package:task_app/theme_notifier.dart';
+import 'package:task_app/notification_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService().init();
   runApp(
     ChangeNotifierProvider(
       create: (_) => ThemeNotifier(),
@@ -24,7 +27,7 @@ class MyApp extends StatelessWidget {
           title: 'Task App',
           debugShowCheckedModeBanner: false,
           theme: themeNotifier.currentTheme,
-          home: const LoginScreen(),
+          home: const AuthCheckScreen(),
         );
       },
     );
