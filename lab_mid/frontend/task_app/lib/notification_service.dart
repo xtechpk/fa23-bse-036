@@ -1,7 +1,10 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:flutter/foundation.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:task_app/task_model.dart';
+// FIX 1: Replace the old import with the new, installed package
+import 'package:flutter_timezone/flutter_timezone.dart'; 
 
 class NotificationService {
   static final NotificationService _notificationService =
@@ -27,7 +30,21 @@ class NotificationService {
 
     tz.initializeTimeZones();
 
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse:
+          (NotificationResponse notificationResponse) async {
+        // Handle notification tap
+        if (kDebugMode) {
+          print('notification payload: ${notificationResponse.payload}');
+        }
+      },
+    );
+
+    // Request notification permissions on Android 13+
+    await _requestPermissions();
+
+     await _configureLocalTimeZone();
   }
 
   Future<void> scheduleNotificationForTask(Task task) async {
@@ -54,5 +71,20 @@ class NotificationService {
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
     );
+  }
+  
+  Future<void> _requestPermissions() async {
+    final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
+        flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+    if (androidImplementation != null) {
+      await androidImplementation.requestNotificationsPermission();
+    }
+  }
+  Future<void> _configureLocalTimeZone() async {
+    tz.initializeTimeZones();
+    // FIX 2: Replace FlutterNativeTimezone with the correct class: FlutterTimezone
+    final String timeZoneName = await FlutterTimezone.getLocalTimezone(); 
+    tz.setLocalLocation(tz.getLocation(timeZoneName));
   }
 }

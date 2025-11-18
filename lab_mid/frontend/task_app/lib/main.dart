@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:task_app/auth_check_screen.dart';
 import 'package:task_app/theme_notifier.dart';
 import 'package:task_app/notification_service.dart';
+import 'dart:async';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,6 +12,7 @@ void main() async {
     ChangeNotifierProvider(
       create: (_) => ThemeNotifier(),
       child: const MyApp(),
+
     ),
   );
 }
