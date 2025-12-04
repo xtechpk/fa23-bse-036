@@ -1,0 +1,31 @@
+name: mighty_news
+description: MightyNews smart app with breaking news and topic filters.
+publish_to: 'none' 
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Network calls
+  http: ^1.2.1
+  
+  # Date formatting
+  intl: ^0.19.0
+  
+  # Default icons
+  cupertino_icons: ^1.0.6
+  
+  # 🔴 NEW: Renders HTML, Images & Text perfectly (Like a Pro App)
+  flutter_widget_from_html: ^0.14.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
