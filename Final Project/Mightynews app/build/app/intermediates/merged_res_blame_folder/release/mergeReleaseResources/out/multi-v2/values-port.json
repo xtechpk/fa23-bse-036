@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.example.mightynewsapp-mergeReleaseResources-39:/values-port/values-port.xml",
+            "map": [
+                {
+                    "source": "/home/xtech/.gradle/caches/8.14/transforms/a2fc1e752dbaed3382c939e71ca4986d/transformed/appcompat-1.1.0/res/values-port/values-port.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "55",
+                        "endOffsets": "106"
+                    }
+                }
+            ]
+        }
+    ]
+}

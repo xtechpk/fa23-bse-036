@@ -1,0 +1,18 @@
+<lint-module
+    format="1"
+    dir="/home/xtech/Desktop/uni/flutter/fa23-bse-036/Final Project/Mightynews app/android/app"
+    name=":app"
+    type="APP"
+    maven="android:app:unspecified"
+    agpVersion="8.11.1"
+    buildFolder="/home/xtech/Desktop/uni/flutter/fa23-bse-036/Final Project/Mightynews app/build/app"
+    bootClassPath="/home/xtech/Android/Sdk/platforms/android-35/android.jar:/home/xtech/Android/Sdk/build-tools/35.0.0/core-lambda-stubs.jar"
+    javaSourceLevel="17"
+    compileTarget="android-35">
+  <lintOptions
+      abortOnError="true"
+      absolutePaths="true"
+      checkReleaseBuilds="true"
+      explainIssues="true"/>
+  <variant name="release"/>
+</lint-module>

@@ -1,4 +1,4 @@
-package com.example.Mightynews app
+package com.example.mightynewsapp
 
 import io.flutter.embedding.android.FlutterActivity
 
