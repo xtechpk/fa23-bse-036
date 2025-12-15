@@ -1,0 +1,26 @@
+name: mightynews_app
+description: A pro news app.
+publish_to: 'none'
+version: 3.0.0+1
+
+environment:
+  sdk: '>=3.1.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  postgres: ^2.6.1       # Database
+  provider: ^6.1.1       # State Management
+  intl: ^0.19.0          # Formatting Dates
+  image_picker: ^1.0.7   # Uploading Images
+  google_fonts: ^6.1.0   # Professional Fonts
+  uuid: ^4.3.3           # Generating IDs
+  shared_preferences: ^2.2.2 # Saving Dark Mode setting
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true

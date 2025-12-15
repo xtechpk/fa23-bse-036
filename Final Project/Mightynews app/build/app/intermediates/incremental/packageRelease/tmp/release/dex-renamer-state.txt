@@ -1,4 +1,0 @@
-#Fri Dec 12 10:30:12 PKT 2025
-base.0=/home/xtech/Desktop/uni/flutter/fa23-bse-036/Final Project/Mightynews app/build/app/intermediates/dex/release/minifyReleaseWithR8/classes.dex
-path.0=classes.dex
-renamed.0=classes.dex
