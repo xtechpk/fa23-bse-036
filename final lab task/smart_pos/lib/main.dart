@@ -1,17 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart'; // For kIsWeb
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'core/constants/api_constants.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
+
+import 'core/theme/theme_provider.dart';
+import 'core/theme/app_theme.dart';
+import 'presentation/auth/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Supabase with your provided URL and Key
+  // FIX: Initialize Database Factory for Web/Chrome vs Mobile
+  if (kIsWeb) {
+    // Configures SQLite for Chrome
+    databaseFactory = databaseFactoryFfiWeb;
+  } else {
+    // Standard initialization for Android/iOS APK
+    if (defaultTargetPlatform == TargetPlatform.windows || defaultTargetPlatform == TargetPlatform.linux) {
+      sqfliteFfiInit();
+      databaseFactory = databaseFactoryFfi;
+    }
+  }
+
+  // Supabase Initialization
   await Supabase.initialize(
-    url: ApiConstants.supabaseUrl,
-    anonKey: ApiConstants.supabaseAnonKey,
+    url: "https://gbtixmrjtcpzlxggjbeo.supabase.co",
+    anonKey: "sb_publishable_9K-g11_qDKEgd2hdvszXEg_bZNp3Zeq",
   );
 
-  runApp(const SmartPOSApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => ThemeProvider(),
+      child: const SmartPOSApp(),
+    ),
+  );
 }
 
 class SmartPOSApp extends StatelessWidget {
@@ -19,10 +44,17 @@ class SmartPOSApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Smart POS & Inventory',
-      theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
-      home: const LoginScreen(), // We will create this next
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
+          title: 'Smart POS Pro',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: themeProvider.themeMode,
+          home: const LoginScreen(),
+        );
+      },
     );
   }
 }

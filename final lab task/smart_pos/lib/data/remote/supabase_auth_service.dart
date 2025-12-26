@@ -8,22 +8,29 @@ class SupabaseAuthService {
 
   Future<void> signUpWithProfile(UserProfile profile, String email, String password) async {
     try {
-      // 1. Auth Signup
+      // 1. Create the Auth User
       final AuthResponse res = await _client.auth.signUp(
         email: email,
         password: password,
       );
 
       if (res.user != null) {
-        // 2. Profile Injection (OOP Encapsulation)
-        await _client.from('profiles').insert(profile.toMap());
+        // 2. Insert profile data into PostgreSQL
+        // Note: Use the user ID from the auth response
+        await _client.from('profiles').insert({
+          'id': res.user!.id,
+          'shop_name': profile.shopName,
+          'ntn_number': profile.toMap()['ntn_number'],
+          'phone_number': profile.toMap()['phone_number'],
+          'address': profile.toMap()['address'],
+          'branch_name': profile.toMap()['branch_name'],
+          'role': profile.role.name,
+        });
       }
+    } on AuthException catch (e) {
+      throw e.message; // Specifically catches the 400 error reasons
     } catch (e) {
-      throw Exception("Signup Failed: ${e.toString()}");
+      throw "An unexpected error occurred: $e";
     }
-  }
-
-  Future<void> signIn(String email, String password) async {
-    await _client.auth.signInWithPassword(email: email, password: password);
   }
 }
