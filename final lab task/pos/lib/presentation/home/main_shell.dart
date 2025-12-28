@@ -3,6 +3,7 @@ import '../../core/utils/responsive.dart';
 import '../pos/pos_screen.dart';
 import '../dashboard/dashboard_screen.dart';
 import '../profile/profile_screen.dart';
+import '../inventory/inventory_screen.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -17,6 +18,7 @@ class _MainShellState extends State<MainShell> {
   final List<Widget> _screens = [
     const DashboardScreen(),
     const POSScreen(),
+    const InventoryScreen(),
     const ProfileScreen(),
   ];
 
@@ -28,11 +30,13 @@ class _MainShellState extends State<MainShell> {
           appBar: AppBar(title: const Text("Smart POS Pro")),
           body: _screens[_selectedIndex],
           bottomNavigationBar: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
             currentIndex: _selectedIndex,
             onTap: (i) => setState(() => _selectedIndex = i),
             items: const [
               BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: "Home"),
               BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: "POS"),
+              BottomNavigationBarItem(icon: Icon(Icons.inventory), label: "Inventory"),
               BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
             ],
           ),
@@ -46,6 +50,7 @@ class _MainShellState extends State<MainShell> {
               destinations: const [
                 NavigationRailDestination(icon: Icon(Icons.dashboard), label: Text("Home")),
                 NavigationRailDestination(icon: Icon(Icons.shopping_cart), label: Text("POS")),
+                NavigationRailDestination(icon: Icon(Icons.inventory), label: Text("Inventory")),
                 NavigationRailDestination(icon: Icon(Icons.person), label: Text("Profile")),
               ],
             ),
@@ -78,7 +83,8 @@ class _MainShellState extends State<MainShell> {
           ),
           _sidebarTile(0, Icons.dashboard, "Dashboard"),
           _sidebarTile(1, Icons.shopping_cart, "POS Terminal"),
-          _sidebarTile(2, Icons.person, "Business Profile"),
+          _sidebarTile(2, Icons.inventory, "Inventory Management"),
+          _sidebarTile(3, Icons.person, "Business Profile"),
         ],
       ),
     );
@@ -86,8 +92,8 @@ class _MainShellState extends State<MainShell> {
 
   Widget _sidebarTile(int index, IconData icon, String title) {
     return ListTile(
-      leading: Icon(icon),
-      title: Text(title),
+      leading: Icon(icon, color: _selectedIndex == index ? Colors.blueAccent : Colors.grey),
+      title: Text(title, style: TextStyle(color: _selectedIndex == index ? Colors.blueAccent : Colors.black)),
       selected: _selectedIndex == index,
       onTap: () => setState(() => _selectedIndex = index),
     );

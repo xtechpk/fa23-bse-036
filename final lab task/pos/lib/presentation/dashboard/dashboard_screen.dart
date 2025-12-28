@@ -1,178 +1,335 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import '../../data/repositories/sales_repository.dart';
+import '../../data/repositories/product_repository.dart';
 import '../../core/utils/responsive.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  final SalesRepository _salesRepo = SalesRepository();
+  final ProductRepository _productRepo = ProductRepository();
+
+  String _selectedFilter = "Daily"; 
+  DateTimeRange _customRange = DateTimeRange(start: DateTime.now(), end: DateTime.now());
+  double _totalRevenue = 0;
+  double _totalProfit = 0;
+  int _lowStockCount = 0;
+  List<Map<String, dynamic>> _filteredSales = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    setState(() => _isLoading = true);
+    DateTime start;
+    DateTime end = DateTime.now();
+
+    if (_selectedFilter == "Daily") {
+      start = DateTime(end.year, end.month, end.day);
+    } else if (_selectedFilter == "Weekly") {
+      start = end.subtract(const Duration(days: 7));
+    } else if (_selectedFilter == "Monthly") {
+      start = DateTime(end.year, end.month, 1);
+    } else {
+      start = _customRange.start;
+      end = _customRange.end;
+    }
+
+    final sales = await _salesRepo.fetchSalesByRange(start, end);
+    final products = await _productRepo.fetchAllProducts();
+
+    double revenue = 0;
+    double profit = 0;
+    for (var s in sales) {
+      revenue += (s['total_amount'] as num).toDouble();
+      profit += (s['total_profit'] as num).toDouble();
+    }
+
+    setState(() {
+      _totalRevenue = revenue;
+      _totalProfit = profit;
+      _lowStockCount = products.where((p) => p.stockQuantity <= p.lowStockLimit).length;
+      _filteredSales = sales;
+      _isLoading = false;
+    });
+  }
+
+  Future<void> _pickCustomDate() async {
+    final picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.dark().copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: Color(0xFF6C63FF),
+              onPrimary: Colors.white,
+              surface: Color(0xFF1E1E2C),
+              onSurface: Colors.white,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() {
+        _customRange = picked;
+        _selectedFilter = "Custom";
+      });
+      _fetchData();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    // We use a LayoutBuilder to get exact pixel constraints of the parent
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA), // Clean professional grey
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildHeader(),
-                const SizedBox(height: 32),
-                
-                // 1. ANALYTICS CARDS SECTION
-                // This grid automatically decides how many cards fit based on width
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: 4,
-                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 300, // Cards won't grow bigger than 300px
-                    mainAxisExtent: 180,    // Fixed height for consistency
-                    crossAxisSpacing: 20,
-                    mainAxisSpacing: 20,
-                    childAspectRatio: 1.5,
-                  ),
-                  itemBuilder: (context, index) {
-                    return _buildAnalysisCard(index);
-                  },
+      backgroundColor: const Color(0xFF0F0F1E), // Deep luxury background
+      body: _isLoading 
+        ? const Center(child: CircularProgressIndicator(color: Color(0xFF6C63FF)))
+        : CustomScrollView(
+            slivers: [
+              _buildAppBar(),
+              SliverPadding(
+                padding: const EdgeInsets.all(20),
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    _buildFilterRow(),
+                    const SizedBox(height: 25),
+                    _buildStatGrid(),
+                    const SizedBox(height: 35),
+                    _buildSectionHeader("Recent Transactions"),
+                    const SizedBox(height: 15),
+                    _buildSalesList(),
+                  ]),
                 ),
-                
-                const SizedBox(height: 32),
-                
-                // 2. MAIN CONTENT SECTION (Chart + Recent Activity)
-                // Switches from Column (Mobile) to Row (Desktop)
-                Responsive(
-                  mobile: Column(
-                    children: [
-                      _buildMainChart(constraints.maxWidth),
-                      const SizedBox(height: 24),
-                      _buildRecentActivity(),
-                    ],
-                  ),
-                  desktop: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(flex: 2, child: _buildMainChart(constraints.maxWidth)),
-                      const SizedBox(width: 24),
-                      Expanded(flex: 1, child: _buildRecentActivity()),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
+              ),
+            ],
+          ),
     );
   }
 
-  Widget _buildHeader() {
-    return const Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text("Business Overview", 
-          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF1A1C1E))),
-        Text("Real-time data from your Sweet Shop", 
-          style: TextStyle(fontSize: 14, color: Colors.grey)),
+  Widget _buildAppBar() {
+    return SliverAppBar(
+      expandedHeight: 120,
+      floating: true,
+      backgroundColor: const Color(0xFF0F0F1E),
+      flexibleSpace: FlexibleSpaceBar(
+        titlePadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+        title: const Text(
+          "Analytics Overview",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
+        ),
+        background: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              colors: [Color(0xFF1E1E2C), Color(0xFF0F0F1E)],
+            ),
+          ),
+        ),
+      ),
+      actions: [
+        IconButton(
+          onPressed: _fetchData,
+          icon: const Icon(Icons.refresh_rounded, color: Colors.white70),
+        ),
+        const SizedBox(width: 10),
       ],
     );
   }
 
-  Widget _buildAnalysisCard(int index) {
-    final List<Map<String, dynamic>> data = [
-      {"title": "Total Revenue", "value": "Rs. 125,430", "icon": Icons.payments, "color": Colors.blue},
-      {"title": "Today's Sales", "value": "Rs. 12,200", "icon": Icons.shopping_bag, "color": Colors.green},
-      {"title": "Stock Alert", "value": "5 Items Low", "icon": Icons.inventory_2, "color": Colors.orange},
-      {"title": "Pending Orders", "value": "14", "icon": Icons.timer, "color": Colors.purple},
-    ];
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 4))
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildFilterRow() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
         children: [
-          CircleAvatar(
-            backgroundColor: data[index]['color'].withOpacity(0.1),
-            child: Icon(data[index]['icon'], color: data[index]['color']),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(data[index]['title'], style: const TextStyle(color: Colors.grey, fontSize: 14)),
-              const SizedBox(height: 4),
-              Text(data[index]['value'], 
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1A1C1E))),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMainChart(double width) {
-    return Container(
-      height: 350,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1A1C1E), // Dark modern theme for charts
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text("Sales Performance", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-          Spacer(),
-          Center(child: Icon(Icons.show_chart, size: 80, color: Colors.blueAccent)),
-          Spacer(),
-          Text("Last 7 days growth: +12.5%", style: TextStyle(color: Colors.greenAccent, fontSize: 12)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRecentActivity() {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE9ECEF)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("Recent Transactions", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 16),
-          for (int i = 0; i < 5; i++)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16),
+          ...["Daily", "Weekly", "Monthly"].map((filter) {
+            bool isSelected = _selectedFilter == filter;
+            return GestureDetector(
+              onTap: () {
+                setState(() => _selectedFilter = filter);
+                _fetchData();
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                margin: const EdgeInsets.only(right: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                decoration: BoxDecoration(
+                  gradient: isSelected 
+                    ? const LinearGradient(colors: [Color(0xFF6C63FF), Color(0xFF3B3B98)])
+                    : null,
+                  color: isSelected ? null : const Color(0xFF1E1E2C),
+                  borderRadius: BorderRadius.circular(30),
+                  boxShadow: isSelected ? [BoxShadow(color: const Color(0xFF6C63FF).withOpacity(0.3), blurRadius: 10)] : null,
+                ),
+                child: Text(
+                  filter,
+                  style: TextStyle(
+                    color: isSelected ? Colors.white : Colors.white60,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            );
+          }),
+          GestureDetector(
+            onTap: _pickCustomDate,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              decoration: BoxDecoration(
+                color: _selectedFilter == "Custom" ? const Color(0xFF6C63FF) : const Color(0xFF1E1E2C),
+                borderRadius: BorderRadius.circular(30),
+              ),
               child: Row(
                 children: [
-                  const CircleAvatar(radius: 18, child: Icon(Icons.person, size: 18)),
-                  const SizedBox(width: 12),
-                  const Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Walk-in Customer", style: TextStyle(fontWeight: FontWeight.w600)),
-                        Text("Cake Order #122", style: TextStyle(fontSize: 12, color: Colors.grey)),
-                      ],
-                    ),
+                  const Icon(Icons.calendar_today_rounded, size: 16, color: Colors.white70),
+                  const SizedBox(width: 8),
+                  Text(
+                    _selectedFilter == "Custom" 
+                        ? "${DateFormat('Md').format(_customRange.start)} - ${DateFormat('Md').format(_customRange.end)}" 
+                        : "Custom",
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                   ),
-                  Text("Rs. ${250 * (i + 1)}", style: const TextStyle(fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildStatGrid() {
+    return GridView.count(
+      shrinkWrap: true,
+      crossAxisCount: Responsive.isMobile(context) ? 2 : 4,
+      mainAxisSpacing: 15,
+      crossAxisSpacing: 15,
+      childAspectRatio: 1.2,
+      physics: const NeverScrollableScrollPhysics(),
+      children: [
+        _sexyStatCard("Revenue", "Rs. ${_totalRevenue.toStringAsFixed(0)}", const Color(0xFF00D2FF), Icons.auto_graph),
+        _sexyStatCard("Profit", "Rs. ${_totalProfit.toStringAsFixed(0)}", const Color(0xFF00FF87), Icons.insights),
+        _sexyStatCard("Sales", "${_filteredSales.length}", const Color(0xFFFFB300), Icons.shopping_bag_rounded),
+        _sexyStatCard("Low Stock", "$_lowStockCount", const Color(0xFFFF5252), Icons.warning_amber_rounded),
+      ],
+    );
+  }
+
+  Widget _sexyStatCard(String title, String value, Color color, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E1E2C),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: color.withOpacity(0.1), width: 1),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: color, size: 20),
+          ),
+          const SizedBox(height: 12),
+          Text(title, style: const TextStyle(color: Colors.white60, fontSize: 13)),
+          const SizedBox(height: 4),
+          FittedBox(
+            child: Text(
+              value,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+        TextButton(
+          onPressed: () {},
+          child: const Text("See All", style: TextStyle(color: Color(0xFF6C63FF))),
+        )
+      ],
+    );
+  }
+
+  Widget _buildSalesList() {
+    if (_filteredSales.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(30),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1E1E2C),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: const Center(
+          child: Text("No data found for this period", style: TextStyle(color: Colors.white38)),
+        ),
+      );
+    }
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: _filteredSales.length,
+      itemBuilder: (context, i) {
+        final sale = _filteredSales[i];
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1E1E2C),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: const Color(0xFF6C63FF).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: const Icon(Icons.person_rounded, color: Color(0xFF6C63FF)),
+            ),
+            title: Text(
+              sale['customer_name'] ?? "Walking Customer",
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+            subtitle: Text(
+              DateFormat('dd MMM, hh:mm a').format(DateTime.parse(sale['date'])),
+              style: const TextStyle(color: Colors.white38, fontSize: 12),
+            ),
+            trailing: Text(
+              "Rs. ${sale['total_amount']}",
+              style: const TextStyle(color: Color(0xFF00FF87), fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart'; // For kIsWeb
+import 'package:flutter/foundation.dart'; 
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sqflite/sqflite.dart';
@@ -9,20 +9,18 @@ import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'core/theme/theme_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'presentation/auth/login_screen.dart';
+import 'presentation/home/main_shell.dart';
+import 'presentation/inventory/add_product_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // FIX: Initialize Database Factory for Web/Chrome vs Mobile
+  // FIX: Web & Desktop SQLite Factory Initialization
   if (kIsWeb) {
-    // Configures SQLite for Chrome
     databaseFactory = databaseFactoryFfiWeb;
-  } else {
-    // Standard initialization for Android/iOS APK
-    if (defaultTargetPlatform == TargetPlatform.windows || defaultTargetPlatform == TargetPlatform.linux) {
-      sqfliteFfiInit();
-      databaseFactory = databaseFactoryFfi;
-    }
+  } else if (defaultTargetPlatform == TargetPlatform.windows || defaultTargetPlatform == TargetPlatform.linux) {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
   }
 
   // Supabase Initialization
@@ -52,7 +50,14 @@ class SmartPOSApp extends StatelessWidget {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: themeProvider.themeMode,
-          home: const LoginScreen(),
+          
+          // FIX: Global Named Routes Table
+          initialRoute: '/',
+          routes: {
+            '/': (context) => const LoginScreen(),
+            '/home': (context) => const MainShell(),
+            '/add-product': (context) => const AddProductScreen(), // Fixes Route Generator Error
+          },
         );
       },
     );
