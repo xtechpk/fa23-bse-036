@@ -8,6 +8,7 @@ import '../../data/models/category_model.dart';
 import '../../data/repositories/product_repository.dart';
 import '../../data/repositories/sales_repository.dart';
 import '../../core/utils/responsive.dart';
+import '../widgets/three_d_card.dart';
 
 class POSScreen extends StatefulWidget {
   const POSScreen({super.key});
@@ -140,7 +141,7 @@ class _POSScreenState extends State<POSScreen> {
                 mainAxisSpacing: 12
               ),
               itemCount: _displayProducts.length,
-              itemBuilder: (context, i) => _buildProductCard(_displayProducts[i]),
+              itemBuilder: (context, i) => _buildProductCard(_displayProducts[i], i),
             ),
       )
     ]);
@@ -200,18 +201,15 @@ class _POSScreenState extends State<POSScreen> {
     );
   }
 
-  Widget _buildProductCard(ProductModel p) {
+  Widget _buildProductCard(ProductModel p, int index) {
     bool isLowStock = p.stockQuantity <= p.lowStockLimit;
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15), 
-        side: BorderSide(color: isLowStock ? Colors.orange.shade100 : Colors.grey[200]!)
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(15),
-        onTap: () => _addToCart(p),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    return EntranceFader(
+      delay: Duration(milliseconds: 50 * (index % 10)),
+      child: ThreeDCard(
+      borderRadius: BorderRadius.circular(15),
+      color: Colors.white,
+      onTap: () => _addToCart(p),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Expanded(
             child: Container(
               width: double.infinity,
@@ -242,7 +240,7 @@ class _POSScreenState extends State<POSScreen> {
           )
         ]),
       ),
-    );
+      );
   }
 
   Widget _buildCartSide() {
@@ -270,10 +268,13 @@ class _POSScreenState extends State<POSScreen> {
 
   Widget _buildCartListTile(int i) {
     final item = _cart[i];
-    return Container(
+    return EntranceFader(
+      offset: const Offset(20, 0),
+      child: ThreeDCard(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(color: Colors.grey[50], borderRadius: BorderRadius.circular(10)),
+      color: Colors.grey[50],
+      borderRadius: BorderRadius.circular(10),
       child: ListTile(
         contentPadding: EdgeInsets.zero,
         title: Text(item.product.name, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
@@ -284,6 +285,7 @@ class _POSScreenState extends State<POSScreen> {
         ]),
         trailing: Text("Rs. ${(item.product.sellingPrice * item.quantity).toStringAsFixed(2)}", 
           style: const TextStyle(fontWeight: FontWeight.bold)),
+      ),
       ),
     );
   }

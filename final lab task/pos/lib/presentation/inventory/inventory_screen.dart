@@ -55,12 +55,12 @@ class _InventoryScreenState extends State<InventoryScreen> {
                               crossAxisSpacing: 12,
                               mainAxisSpacing: 12),
                           itemCount: _products.length,
-                          itemBuilder: (context, i) => _productCard(_products[i]),
+                          itemBuilder: (context, i) => _productCard(_products[i], i),
                         )
                       : ListView.builder(
                           padding: const EdgeInsets.all(0),
                           itemCount: _products.length,
-                          itemBuilder: (context, i) => _productCard(_products[i]),
+                          itemBuilder: (context, i) => _productCard(_products[i], i),
                         ),
                 );
               },
@@ -77,22 +77,22 @@ class _InventoryScreenState extends State<InventoryScreen> {
     );
   }
 
-  Widget _productCard(ProductModel p) {
+  Widget _productCard(ProductModel p, int index) {
     bool isLowStock = p.stockQuantity <= p.lowStockLimit;
-    return Padding(
+    return EntranceFader(
+      delay: Duration(milliseconds: index * 50),
+      child: Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: ThreeDCard(
-        child: InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: () async {
-            final res = await Navigator.pushNamed(context, '/edit-product', arguments: p);
-            if (res == true) await _loadData();
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              children: [
-                Container(
+        type: ThreeDType.lift,
+        onTap: () async {
+          final res = await Navigator.pushNamed(context, '/edit-product', arguments: p);
+          if (res == true) await _loadData();
+        },
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            Container(
                   width: 64,
                   height: 64,
                   decoration: BoxDecoration(
@@ -152,9 +152,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     ]),
               ],
             ),
-          ),
-        ),
       ),
+    ),
     );
   }
 

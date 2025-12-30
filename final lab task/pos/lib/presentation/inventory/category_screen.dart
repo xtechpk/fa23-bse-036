@@ -130,7 +130,10 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   itemCount: _categories.length,
                   itemBuilder: (context, index) {
                     final c = _categories[index];
-                    return ThreeDCard(
+                    return EntranceFader(
+                      delay: Duration(milliseconds: index * 50),
+                      child: ThreeDCard(
+                      type: ThreeDType.lift,
                       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                       borderRadius: BorderRadius.circular(12),
                       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -140,6 +143,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                           IconButton(icon: const Icon(Icons.delete_outline), onPressed: () => _confirmDelete(c)),
                         ])
                       ]),
+                    ),
                     );
                   },
                 ),

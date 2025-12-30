@@ -3,6 +3,7 @@ import '../../data/remote/auth_service.dart';
 import 'signup_screen.dart';
 import '../home/main_shell.dart';
 import '../../core/utils/responsive.dart';
+import '../widgets/three_d_card.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -54,19 +55,11 @@ class _LoginScreenState extends State<LoginScreen> {
           child: ConstrainedBox(
             // Keeps the login card professional on wide screens
             constraints: const BoxConstraints(maxWidth: 450),
-            child: Container(
+            child: EntranceFader(
+              child: ThreeDCard(
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 48),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(28),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 25,
-                    offset: const Offset(0, 10),
-                  )
-                ],
-              ),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(28),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -155,6 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
               ),
+            ),
             ),
           ),
         ),

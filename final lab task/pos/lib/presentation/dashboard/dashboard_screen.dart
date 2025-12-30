@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../../data/repositories/sales_repository.dart';
 import '../../data/repositories/product_repository.dart';
 import '../../core/utils/responsive.dart';
+import '../widgets/three_d_card.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -221,22 +222,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
       childAspectRatio: 1.2,
       physics: const NeverScrollableScrollPhysics(),
       children: [
-        _sexyStatCard("Revenue", "Rs. ${_totalRevenue.toStringAsFixed(0)}", const Color(0xFF00D2FF), Icons.auto_graph),
-        _sexyStatCard("Profit", "Rs. ${_totalProfit.toStringAsFixed(0)}", const Color(0xFF00FF87), Icons.insights),
-        _sexyStatCard("Sales", "${_filteredSales.length}", const Color(0xFFFFB300), Icons.shopping_bag_rounded),
-        _sexyStatCard("Low Stock", "$_lowStockCount", const Color(0xFFFF5252), Icons.warning_amber_rounded),
+        EntranceFader(delay: const Duration(milliseconds: 0), child: _sexyStatCard("Revenue", "Rs. ${_totalRevenue.toStringAsFixed(0)}", const Color(0xFF00D2FF), Icons.auto_graph)),
+        EntranceFader(delay: const Duration(milliseconds: 100), child: _sexyStatCard("Profit", "Rs. ${_totalProfit.toStringAsFixed(0)}", const Color(0xFF00FF87), Icons.insights)),
+        EntranceFader(delay: const Duration(milliseconds: 200), child: _sexyStatCard("Sales", "${_filteredSales.length}", const Color(0xFFFFB300), Icons.shopping_bag_rounded)),
+        EntranceFader(delay: const Duration(milliseconds: 300), child: _sexyStatCard("Low Stock", "$_lowStockCount", const Color(0xFFFF5252), Icons.warning_amber_rounded)),
       ],
     );
   }
 
   Widget _sexyStatCard(String title, String value, Color color, IconData icon) {
-    return Container(
+    return ThreeDCard(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E1E2C),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: color.withOpacity(0.1), width: 1),
-      ),
+      color: const Color(0xFF1E1E2C),
+      borderRadius: BorderRadius.circular(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -298,13 +296,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
       itemCount: _filteredSales.length,
       itemBuilder: (context, i) {
         final sale = _filteredSales[i];
-        return Container(
+        return EntranceFader(
+          delay: Duration(milliseconds: i * 50),
+          child: ThreeDCard(
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: const Color(0xFF1E1E2C),
-            borderRadius: BorderRadius.circular(20),
-          ),
+          color: const Color(0xFF1E1E2C),
+          borderRadius: BorderRadius.circular(20),
           child: ListTile(
             contentPadding: EdgeInsets.zero,
             leading: Container(
@@ -327,6 +325,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               "Rs. ${sale['total_amount']}",
               style: const TextStyle(color: Color(0xFF00FF87), fontWeight: FontWeight.bold, fontSize: 16),
             ),
+          ),
           ),
         );
       },
