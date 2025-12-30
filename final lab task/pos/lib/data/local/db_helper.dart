@@ -16,7 +16,7 @@ class DBHelper {
 
   Future<Database> _initDB() async {
     String path = kIsWeb ? 'smart_pos_v6.db' : join(await getDatabasesPath(), 'smart_pos_v6.db');
-    return await openDatabase(path, version: 1, onCreate: (db, version) async {
+    return await openDatabase(path, version: 2, onCreate: (db, version) async {
       // 1. Categories
       await db.execute('CREATE TABLE categories (id TEXT PRIMARY KEY, name TEXT UNIQUE)');
       
@@ -35,6 +35,18 @@ class DBHelper {
       await db.execute('''CREATE TABLE sale_items (
         id INTEGER PRIMARY KEY AUTOINCREMENT, sale_id TEXT, product_id TEXT,
         product_name TEXT, quantity INTEGER, price REAL)''');
+
+      // 5. Profile (new in version 2)
+      await db.execute('''CREATE TABLE profile (
+        id TEXT PRIMARY KEY, shop_name TEXT, ntn_number TEXT,
+        phone_number TEXT, address TEXT)''');
+    }, onUpgrade: (db, oldV, newV) async {
+      // Upgrade path from v1 -> v2: add profile table
+      if (oldV < 2 && newV >= 2) {
+        await db.execute('''CREATE TABLE IF NOT EXISTS profile (
+          id TEXT PRIMARY KEY, shop_name TEXT, ntn_number TEXT,
+          phone_number TEXT, address TEXT)''');
+      }
     });
   }
 }

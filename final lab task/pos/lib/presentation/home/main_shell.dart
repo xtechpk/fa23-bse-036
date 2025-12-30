@@ -4,6 +4,8 @@ import '../pos/pos_screen.dart';
 import '../dashboard/dashboard_screen.dart';
 import '../profile/profile_screen.dart';
 import '../inventory/inventory_screen.dart';
+import '../widgets/app_drawer.dart';
+import '../../data/models/user_model.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -28,6 +30,7 @@ class _MainShellState extends State<MainShell> {
       body: Responsive(
         mobile: Scaffold(
           appBar: AppBar(title: const Text("Smart POS Pro")),
+          drawer: AppDrawer(userRole: UserRole.admin),
           body: _screens[_selectedIndex],
           bottomNavigationBar: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
@@ -72,18 +75,18 @@ class _MainShellState extends State<MainShell> {
   Widget _buildSidebar() {
     return Container(
       width: 260,
-      color: Colors.white,
+      color: Theme.of(context).scaffoldBackgroundColor,
       child: Column(
         children: [
-          const DrawerHeader(
-            child: Center(
-              child: Text("SMART POS PRO", 
-                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20, color: Colors.blueAccent)),
-            ),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            child: const Center(child: Text("SMART POS PRO", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20, color: Colors.blueAccent))),
           ),
+          const SizedBox(height: 12),
           _sidebarTile(0, Icons.dashboard, "Dashboard"),
           _sidebarTile(1, Icons.shopping_cart, "POS Terminal"),
           _sidebarTile(2, Icons.inventory, "Inventory Management"),
+          ListTile(leading: const Icon(Icons.category), title: const Text('Manage Categories'), onTap: () => Navigator.pushNamed(context, '/categories')),
           _sidebarTile(3, Icons.person, "Business Profile"),
         ],
       ),

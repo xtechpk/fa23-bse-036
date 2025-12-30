@@ -1,7 +1,9 @@
 // lib/presentation/widgets/app_drawer.dart
 
 import 'package:flutter/material.dart';
-import '../../data/models/user_profile.dart'; // Import the UserRole enum
+import 'package:provider/provider.dart';
+import '../../core/theme/theme_provider.dart';
+import '../../data/models/user_model.dart'; // Import the UserRole enum
 
 class AppDrawer extends StatelessWidget {
   final UserRole userRole;
@@ -13,13 +15,18 @@ class AppDrawer extends StatelessWidget {
     return Drawer(
       child: ListView(
         children: [
-          const DrawerHeader(child: Text("Smart POS Menu")),
+          DrawerHeader(
+            decoration: BoxDecoration(gradient: LinearGradient(colors: [Theme.of(context).colorScheme.primary.withOpacity(0.9), Theme.of(context).colorScheme.primary])),
+            child: const Center(child: Text("Smart POS Menu", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold))),
+          ),
           // Always visible for all
           ListTile(title: const Text("POS Billing"), onTap: () {}),
           
           // Hidden from 'servant' - visible for Admin/SuperAdmin
-          if (userRole != UserRole.servant)
+          if (userRole != UserRole.servant) ...[
             ListTile(title: const Text("Inventory Management"), onTap: () {}),
+            ListTile(title: const Text("Manage Categories"), onTap: () { Navigator.pop(context); Navigator.pushNamed(context, '/categories'); }),
+          ],
           
           // Only visible for Super Admin
           if (userRole == UserRole.superAdmin)

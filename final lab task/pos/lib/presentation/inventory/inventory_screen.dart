@@ -1,6 +1,9 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../data/models/product_model.dart';
 import '../../data/repositories/product_repository.dart';
+import '../widgets/three_d_card.dart';
 
 class InventoryScreen extends StatefulWidget {
   const InventoryScreen({super.key});
@@ -32,43 +35,99 @@ class _InventoryScreenState extends State<InventoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
-      body: _isLoading 
+      appBar: AppBar(
+        title: const Text('Inventory'),
+      ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : _products.isEmpty 
-              ? _buildEmptyState()
-              : _buildProductList(),
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                if (_products.isEmpty) return _buildEmptyState();
+                final isWide = constraints.maxWidth > 800;
+                return Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: isWide
+                      ? GridView.builder(
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2, childAspectRatio: 3.2, crossAxisSpacing: 12, mainAxisSpacing: 12),
+                          itemCount: _products.length,
+                          itemBuilder: (context, i) => _productCard(_products[i]),
+                        )
+                      : ListView.builder(
+                          padding: const EdgeInsets.all(0),
+                          itemCount: _products.length,
+                          itemBuilder: (context, i) => _productCard(_products[i]),
+                        ),
+                );
+              },
+            ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
-          // Navigates to the named route defined in main.dart
-          await Navigator.pushNamed(context, '/add-product');
-          _loadData(); // Refresh list when returning
+          final res = await Navigator.pushNamed(context, '/add-product');
+          if (res == true) await _loadData(); // Refresh if product was added/updated
         },
         label: const Text("ADD PRODUCT"),
         icon: const Icon(Icons.add),
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
     );
   }
 
-  Widget _buildProductList() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(20),
-      itemCount: _products.length,
-      itemBuilder: (context, index) {
-        final p = _products[index];
-        return Card(
-          elevation: 0,
-          margin: const EdgeInsets.only(bottom: 12),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: Colors.grey[200]!)),
-          child: ListTile(
-            leading: CircleAvatar(backgroundColor: Colors.blue.shade50, child: const Icon(Icons.inventory_2, color: Colors.blueAccent)),
-            title: Text(p.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text("SKU: ${p.sku} | Stock: ${p.stockQuantity}"),
-            trailing: Text("Rs. ${p.sellingPrice}", style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold)),
+  Widget _productCard(ProductModel p) {
+    bool isLowStock = p.stockQuantity <= p.lowStockLimit;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: ThreeDCard(
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () async { final res = await Navigator.pushNamed(context, '/edit-product', arguments: p); if (res == true) _loadData(); },
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), color: Colors.grey[100]),
+                child: p.imageUrl != null && p.imageUrl!.isNotEmpty && !kIsWeb
+                    ? ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.file(File(p.imageUrl!), fit: BoxFit.cover))
+                    : const Icon(Icons.inventory_2_outlined, size: 36, color: Colors.grey),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+                  Text(p.name, style: const TextStyle(fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  const SizedBox(height: 6),
+                  Text('SKU: ${p.sku}', style: TextStyle(fontSize: 12, color: Colors.grey[700])),
+                  const SizedBox(height: 6),
+                  Wrap(spacing: 6, children: [Chip(label: Text(p.category)), Text('Stock: ${p.stockQuantity}', style: TextStyle(fontSize: 12, color: isLowStock ? Colors.red : Colors.grey))]),
+                ]),
+              ),
+              const SizedBox(width: 12),
+              Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.end, children: [
+                Text('Rs. ${p.sellingPrice}', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 4),
+                IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert)),
+              ]),
+            ],
           ),
-        );
-      },
+        ),
+      ),
+    );
+  }
+
+  Future<bool?> _confirmProductDelete(String name) async {
+    return await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delete Product'),
+        content: Text('Delete "${name}"?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')),
+          ElevatedButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Delete'))
+        ],
+      ),
     );
   }
 
@@ -86,4 +145,5 @@ class _InventoryScreenState extends State<InventoryScreen> {
       ),
     );
   }
+
 }

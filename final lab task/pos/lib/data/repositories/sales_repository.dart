@@ -8,7 +8,7 @@ class SalesRepository {
   final _dbHelper = DBHelper();
 
   // FIX: This method was missing in your error log
-  Future<bool> processCheckout({
+  Future<String?> processCheckout({
     required List<CartItem> cart,
     required String customerName,
   }) async {
@@ -50,9 +50,9 @@ class SalesRepository {
             [item.quantity, item.product.id],
           );
         }
-        return true;
+        return saleId;
       } catch (e) {
-        return false;
+        return null;
       }
     });
   }

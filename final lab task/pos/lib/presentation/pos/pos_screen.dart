@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:printing/printing.dart';
+import 'package:pdf/widgets.dart' as pw;
 import '../../data/models/product_model.dart';
 import '../../data/models/cart_item.dart';
 import '../../data/models/category_model.dart';
@@ -313,17 +316,28 @@ class _POSScreenState extends State<POSScreen> {
           onPressed: _cart.isEmpty ? null : () async {
             // Show loading
             showDialog(context: context, builder: (c) => const Center(child: CircularProgressIndicator()));
-            
-            final ok = await _salesRepo.processCheckout(cart: _cart, customerName: "Walking Customer");
-            
+
+            final saleId = await _salesRepo.processCheckout(cart: _cart, customerName: "Walking Customer");
+
             Navigator.pop(context); // Close loading
 
-            if (ok) {
+            if (saleId != null) {
+              final double total = _cart.fold(0, (sum, item) => sum + (item.product.sellingPrice * item.quantity));
+
+              // Generate and share receipt PDF
+              try {
+                await _generateReceiptPdf(saleId, List.from(_cart), total);
+              } catch (e) {
+                // ignore pdf error, continue
+              }
+
               setState(() => _cart.clear());
               _loadInitialData(); // Crucial: Refresh stock immediately
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text("Checkout Successful!"), backgroundColor: Colors.green)
               );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Checkout failed"), backgroundColor: Colors.red));
             }
           },
           style: ElevatedButton.styleFrom(
@@ -336,6 +350,29 @@ class _POSScreenState extends State<POSScreen> {
         )
       ]),
     );
+  }
+
+  Future<void> _generateReceiptPdf(String saleId, List<CartItem> cart, double total) async {
+    final pdf = pw.Document();
+    final now = DateTime.now();
+    pdf.addPage(pw.Page(build: (context) {
+      return pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
+        pw.Text('SMART POS PRO', style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold)),
+        pw.SizedBox(height: 8),
+        pw.Text('Sale ID: $saleId'),
+        pw.Text('Date: ${DateFormat.yMd().add_jm().format(now)}'),
+        pw.SizedBox(height: 12),
+        pw.Table.fromTextArray(
+          headers: ['Item', 'Qty', 'Price', 'Total'],
+          data: cart.map((c) => [c.product.name, c.quantity.toString(), c.product.sellingPrice.toStringAsFixed(2), (c.product.sellingPrice * c.quantity).toStringAsFixed(2)]).toList(),
+        ),
+        pw.Divider(),
+        pw.Align(alignment: pw.Alignment.centerRight, child: pw.Text('Total: Rs ${total.toStringAsFixed(2)}', style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold))),
+      ]);
+    }));
+
+    final bytes = await pdf.save();
+    await Printing.sharePdf(bytes: bytes, filename: 'receipt_$saleId.pdf');
   }
 
   void _showMobileCart() {

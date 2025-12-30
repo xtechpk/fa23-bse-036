@@ -19,6 +19,25 @@ class ProductRepository {
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
+  Future<void> updateCategory(CategoryModel category) async {
+    final db = await _dbHelper.database;
+    await db.update(
+      'categories',
+      category.toMap(),
+      where: 'id = ?',
+      whereArgs: [category.id],
+    );
+  }
+
+  Future<void> deleteCategory(String id) async {
+    final db = await _dbHelper.database;
+    await db.delete(
+      'categories',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
   // --- Product CRUD Methods ---
   Future<void> addProduct(ProductModel product) async {
     try {

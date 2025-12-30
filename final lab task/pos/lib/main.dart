@@ -11,6 +11,8 @@ import 'core/theme/app_theme.dart';
 import 'presentation/auth/login_screen.dart';
 import 'presentation/home/main_shell.dart';
 import 'presentation/inventory/add_product_screen.dart';
+import 'presentation/inventory/category_screen.dart';
+import 'data/models/product_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -57,6 +59,11 @@ class SmartPOSApp extends StatelessWidget {
             '/': (context) => const LoginScreen(),
             '/home': (context) => const MainShell(),
             '/add-product': (context) => const AddProductScreen(), // Fixes Route Generator Error
+            '/edit-product': (context) {
+              final args = ModalRoute.of(context)!.settings.arguments;
+              return AddProductScreen(product: args as ProductModel?);
+            },
+            '/categories': (context) => const CategoryScreen(),
           },
         );
       },

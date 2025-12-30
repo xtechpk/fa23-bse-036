@@ -3,6 +3,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sqflite/sqflite.dart';
 import '../../data/local/db_helper.dart';
 import '../../core/utils/responsive.dart';
+import '../widgets/three_d_card.dart';
+import '../widgets/three_d_button.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -116,28 +118,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildProfileHeader() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(32),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [Color(0xFF2196F3), Color(0xFF1565C0)]),
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Column(
-        children: [
-          const CircleAvatar(
-            radius: 50,
-            backgroundColor: Colors.white24,
-            child: Icon(Icons.storefront_rounded, size: 50, color: Colors.white),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            _shopController.text.isEmpty ? "Your Shop Name" : _shopController.text,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
-          ),
-          const Text("POS Verified Merchant", style: TextStyle(color: Colors.white70)),
-        ],
-      ),
+    return ThreeDCard(
+      borderRadius: BorderRadius.circular(20),
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+      child: Row(children: [
+        const CircleAvatar(
+          radius: 40,
+          backgroundColor: Colors.white24,
+          child: Icon(Icons.storefront_rounded, size: 40, color: Colors.white),
+        ),
+        const SizedBox(width: 16),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(_shopController.text.isEmpty ? "Your Shop Name" : _shopController.text, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+          const SizedBox(height: 4),
+          Text("POS Verified Merchant", style: TextStyle(color: Theme.of(context).colorScheme.primary.withOpacity(0.9))),
+        ]))
+      ]),
     );
   }
 
@@ -174,18 +170,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildSectionCard(String title, List<Widget> children) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 15)],
-      ),
+    return ThreeDCard(
+      borderRadius: BorderRadius.circular(20),
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1A1C1E))),
-          const SizedBox(height: 24),
+          Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary)),
+          const SizedBox(height: 20),
           ...children,
         ],
       ),
@@ -213,17 +205,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildSaveButton() {
     return Container(
       constraints: const BoxConstraints(maxWidth: 400),
-      child: ElevatedButton(
-        onPressed: _saveProfile,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.blueAccent,
-          foregroundColor: Colors.white,
-          minimumSize: const Size(double.infinity, 60),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-          elevation: 0,
-        ),
-        child: const Text("SAVE & SYNC CLOUD", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1.1)),
-      ),
+      child: ThreeDButton(onPressed: _saveProfile, child: const Text("SAVE & SYNC CLOUD", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1.1))),
     );
   }
 }
