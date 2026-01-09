@@ -130,83 +130,60 @@ The application follows a **layered architecture**:
 
 ## 📸 Application Screenshots
 
-> Screenshots demonstrate the complete workflow. Each image is framed with border and caption for a professional look.
+> The following images demonstrate the full workflow of the Smart POS System.  
+> All images are uniform in size with proper captions for professional presentation.
 
-### 🔐 Authentication Screens
-
-<p align="center">
-  <img src="assets/screenshots/login.png" width="260" style="border:1px solid #ccc; border-radius:10px;"/>
-  <br>**Login Screen**
-  <img src="assets/screenshots/register.png" width="260" style="border:1px solid #ccc; border-radius:10px;"/>
-  <br>**Register Screen**
-</p>
+| 🔐 Authentication | 🔐 Authentication |
+|------------------|------------------|
+| <img src="assets/screenshots/login.png" width="260"/> | <img src="assets/screenshots/register.png" width="260"/> |
+| **Login Screen** | **Register Screen** |
 
 ---
 
-### 📊 Dashboard & Recent Transactions
-
-<p align="center">
-  <img src="assets/screenshots/dashboard.png" width="240" style="border:1px solid #ccc; border-radius:10px;"/>
-  <br>**Dashboard Overview**
-  <img src="assets/screenshots/recent_transactions.png" width="240" style="border:1px solid #ccc; border-radius:10px;"/>
-  <br>**Recent Transactions**
-</p>
+| 📊 Dashboard | 📊 Recent Transactions |
+|--------------|----------------------|
+| <img src="assets/screenshots/dashboard.png" width="240"/> | <img src="assets/screenshots/recent_transactions.png" width="240"/> |
+| **Dashboard Overview** | **Recent Transactions** |
 
 ---
 
-### 🏢 Business Settings
-
-<p align="center">
-  <img src="assets/screenshots/business_settings.png" width="260" style="border:1px solid #ccc; border-radius:10px;"/>
-  <br>**Business Settings**
-</p>
+| 🏢 Business Settings |
+|---------------------|
+| <img src="assets/screenshots/business_settings.png" width="260"/> |
+| **Business Settings** |
 
 ---
 
-### 📦 Inventory & Product Management
+| 📦 Inventory | 📦 Add Category | 📦 Add Product |
+|-------------|----------------|----------------|
+| <img src="assets/screenshots/inventory.png" width="240"/> | <img src="assets/screenshots/add_category.png" width="240"/> | <img src="assets/screenshots/add_product.png" width="240"/> |
+| **Inventory Screen** | **Add Category** | **Add Product** |
 
-<p align="center">
-  <img src="assets/screenshots/inventory.png" width="240" style="border:1px solid #ccc; border-radius:10px;"/>
-  <br>**Inventory Screen**
-  <img src="assets/screenshots/add_category.png" width="240" style="border:1px solid #ccc; border-radius:10px;"/>
-  <br>**Add Category**
-  <img src="assets/screenshots/add_product.png" width="240" style="border:1px solid #ccc; border-radius:10px;"/>
-  <br>**Add Product**
-</p>
-
-<p align="center">
-  <img src="assets/screenshots/edit_product.png" width="240" style="border:1px solid #ccc; border-radius:10px;"/>
-  <br>**Edit Product**
-</p>
+| 📦 Edit Product |
+|----------------|
+| <img src="assets/screenshots/edit_product.png" width="240"/> |
+| **Edit Product** |
 
 ---
 
-### 🛒 Cart & Checkout Process
-
-<p align="center">
-  <img src="assets/screenshots/checkout.png" width="240" style="border:1px solid #ccc; border-radius:10px;"/>
-  <br>**Checkout Screen**
-</p>
+| 🛒 Checkout |
+|------------|
+| <img src="assets/screenshots/checkout.png" width="240"/> |
+| **Checkout Screen** |
 
 ---
 
-### 📄 Receipt & Order History
-
-<p align="center">
-  <img src="assets/screenshots/receipt.png" width="240" style="border:1px solid #ccc; border-radius:10px;"/>
-  <br>**Generated Receipt**
-</p>
+| 📄 Receipt | 📄 Orders |
+|------------|------------|
+| <img src="assets/screenshots/receipt.png" width="240"/> | <img src="assets/screenshots/orders.png" width="240"/> |
+| **Generated Receipt** | **Order History** |
 
 ---
 
-### ↩️ Returns Management
-
-<p align="center">
-  <img src="assets/screenshots/returns.png" width="260" style="border:1px solid #ccc; border-radius:10px;"/>
-  <br>**Return Screen**
-  <img src="assets/screenshots/partial_return.png" width="260" style="border:1px solid #ccc; border-radius:10px;"/>
-  <br>**Partial Return**
-</p>
+| ↩️ Returns | ↩️ Partial Return |
+|------------|-----------------|
+| <img src="assets/screenshots/returns.png" width="260"/> | <img src="assets/screenshots/partial_return.png" width="260"/> |
+| **Return Screen** | **Partial Return** |
 
 ---
 
