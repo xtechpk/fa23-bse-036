@@ -125,7 +125,7 @@ The application follows a **layered architecture**:
 ## 🎥 Demo Video
 
 ▶ **Application Demo Video:**  
-👉 https://your-demo-video-link-here
+👉 https://drive.google.com/drive/folders/1tV-ycOh7MDpjkTSxFMz9btvFbHqXz3Ec
 
 > The demo video demonstrates login, inventory management, checkout, receipt generation, and returns.
 
@@ -139,18 +139,37 @@ The application follows a **layered architecture**:
 ### 🔐 Authentication Screens
 
 <p align="center">
-  <img src="screenshots/login.png" width="260"/>
-  <img src="screenshots/register.png" width="260"/>
+  <img src="assets/screenshots/login.png" width="260"/>
+  <img src="assets/screenshots/register.png" width="260"/>
 </p>
 
 ---
 
+### 📊 Dashboard & Recent Transactions
+
+<p align="center">
+  <img src="assets/screenshots/dashboard.png" width="240"/>
+  <img src="assets/screenshots/recent_transactions.png" width="240"/>
+</p>
+
+---
+
+### 🏢 Business Settings
+
+<p align="center">
+  <img src="assets/screenshots/business_settings.png" width="260"/>
+</p>
+
+---
+
+
 ### 📦 Inventory & Product Management
 
 <p align="center">
-  <img src="screenshots/inventory.png" width="240"/>
-  <img src="screenshots/add_product.png" width="240"/>
-  <img src="screenshots/edit_product.png" width="240"/>
+  <img src="assets/screenshots/inventory.png" width="240"/>
+  <img src="assets/screenshots/add_category.png" width="240"/>
+  <img src="assets/screenshots/add_product.png" width="240"/>
+  <img src="assets/screenshots/edit_product.png" width="240"/>
 </p>
 
 ---
@@ -158,9 +177,8 @@ The application follows a **layered architecture**:
 ### 🛒 Cart & Checkout Process
 
 <p align="center">
-  <img src="screenshots/cart.png" width="240"/>
-  <img src="screenshots/checkout.png" width="240"/>
-  <img src="screenshots/payment.png" width="240"/>
+  <img src="assets/screenshots/checkout.png" width="240"/>
+
 </p>
 
 ---
@@ -168,9 +186,7 @@ The application follows a **layered architecture**:
 ### 📄 Receipt & Order History
 
 <p align="center">
-  <img src="screenshots/receipt.png" width="240"/>
-  <img src="screenshots/orders.png" width="240"/>
-  <img src="screenshots/order_details.png" width="240"/>
+  <img src="assets/screenshots/receipt.png" width="240"/>
 </p>
 
 ---
@@ -178,8 +194,8 @@ The application follows a **layered architecture**:
 ### ↩️ Returns Management
 
 <p align="center">
-  <img src="screenshots/returns.png" width="260"/>
-  <img src="screenshots/partial_return.png" width="260"/>
+  <img src="assets/screenshots/returns.png" width="260"/>
+  <img src="assets/screenshots/partial_return.png" width="260"/>
 </p>
 
 ---
