@@ -24,11 +24,17 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
   Future<void> _loadCategories() async {
     setState(() => _isLoading = true);
-    final cats = await _repo.fetchAllCategories();
-    setState(() {
-      _categories = cats;
-      _isLoading = false;
-    });
+    try {
+      final cats = await _repo.fetchAllCategories();
+      if (mounted) {
+        setState(() {
+          _categories = cats;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   void _showAddDialog() {

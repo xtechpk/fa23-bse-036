@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import '../../data/models/product_model.dart';
 import '../../data/repositories/product_repository.dart';
 import '../widgets/three_d_card.dart';
+import 'category_screen.dart';
+import '../checkout/checkout_screen.dart';
+import '../returns/return_screen.dart';
 
 class InventoryScreen extends StatefulWidget {
   const InventoryScreen({super.key});
@@ -16,6 +19,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
   final ProductRepository _productRepo = ProductRepository();
   bool _isLoading = true;
   List<ProductModel> _products = [];
+  final List<ProductModel> _cart = [];
 
   @override
   void initState() {
@@ -25,11 +29,23 @@ class _InventoryScreenState extends State<InventoryScreen> {
 
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
-    final data = await _productRepo.fetchAllProducts();
-    setState(() {
-      _products = data;
-      _isLoading = false;
-    });
+    try {
+      final data = await _productRepo.fetchAllProducts();
+      if (mounted) {
+        setState(() {
+          _products = data;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  void _addToCart(ProductModel p) {
+    setState(() => _cart.add(p));
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("${p.name} added to cart"), duration: const Duration(milliseconds: 800)));
   }
 
   @override
@@ -37,6 +53,27 @@ class _InventoryScreenState extends State<InventoryScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Inventory'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.category),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CategoryScreen())),
+          ),
+          IconButton(
+            icon: const Icon(Icons.assignment_return),
+            tooltip: "Returns",
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ReturnScreen())),
+          ),
+          Stack(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.shopping_cart),
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CheckoutScreen(cartItems: _cart, onCheckoutComplete: () { setState(() { _cart.clear(); _loadData(); }); }))),
+              ),
+              if (_cart.isNotEmpty)
+                Positioned(right: 8, top: 8, child: Container(padding: const EdgeInsets.all(4), decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle), child: Text('${_cart.length}', style: const TextStyle(color: Colors.white, fontSize: 10))))
+            ],
+          ),
+        ],
       ),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: _isLoading
@@ -139,12 +176,23 @@ class _InventoryScreenState extends State<InventoryScreen> {
                               fontWeight: FontWeight.bold)),
                       const SizedBox(height: 4),
                       IconButton(
+                        icon: const Icon(Icons.add_shopping_cart_outlined),
+                        color: Colors.green,
+                        onPressed: () => _addToCart(p),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.edit_outlined, size: 20),
+                        onPressed: () async {
+                          final res = await Navigator.pushNamed(context, '/edit-product', arguments: p);
+                          if (res == true) await _loadData();
+                        },
+                      ),
+                      IconButton(
                         onPressed: () async {
                           final confirm = await _confirmProductDelete(p.name);
                           if (confirm == true) {
-                            // TODO: Implement actual delete logic via repository
-                            // await _productRepo.deleteProduct(p.id);
-                            // await _loadData();
+                            await _productRepo.deleteProduct(p.id);
+                            await _loadData();
                           }
                         },
                         icon: const Icon(Icons.more_vert),

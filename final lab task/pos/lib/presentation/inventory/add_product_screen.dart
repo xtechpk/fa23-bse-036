@@ -59,8 +59,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
   }
 
   Future<void> _loadCategories() async {
-    final cats = await _repo.fetchAllCategories();
-    setState(() => _categories = cats);
+    try {
+      final cats = await _repo.fetchAllCategories();
+      if (mounted) setState(() => _categories = cats);
+    } catch (e) {
+      debugPrint("Error loading categories: $e");
+    }
   }
 
 
